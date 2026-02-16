@@ -1,0 +1,123 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  border: 2px solid transparent;
+  text-decoration: none;
+  gap: 8px;
+  font-family: inherit;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+/* Primary Button */
+.primary {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border-color: var(--primary-blue);
+}
+
+.primary:hover {
+  background-color: var(--dark-blue);
+  border-color: var(--dark-blue);
+}
+
+/* Secondary Button */
+.secondary {
+  background-color: var(--light-gray);
+  color: var(--text-dark);
+  border-color: var(--medium-gray);
+}
+
+.secondary:hover {
+  background-color: var(--medium-gray);
+  border-color: var(--dark-gray);
+}
+
+/* Outline Button */
+.outline {
+  background-color: transparent;
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.outline:hover {
+  background-color: var(--light-blue);
+  color: var(--dark-blue);
+  border-color: var(--dark-blue);
+}
+
+/* Success Button (Green) */
+.success {
+  background-color: var(--growth-green);
+  color: var(--white);
+  border-color: var(--growth-green);
+}
+
+.success:hover {
+  background-color: #1f5a34;
+  border-color: #1f5a34;
+}
+
+/* Icon Button */
+.icon {
+  padding: 8px 16px;
+  font-size: var(--font-size-sm);
+}
+
+/* Small Button */
+.small {
+  padding: 8px 16px;
+  font-size: var(--font-size-sm);
+}
+
+/* Large Button */
+.large {
+  padding: 16px 32px;
+  font-size: var(--font-size-lg);
+}
+
+/* Block Button */
+.block {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Disabled State */
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button:disabled:hover {
+  transform: none;
+}
+
+/* Link Button */
+.link {
+  background-color: transparent;
+  color: var(--primary-blue);
+  border-color: transparent;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.link:hover {
+  color: var(--dark-blue);
+  box-shadow: none;
+}
