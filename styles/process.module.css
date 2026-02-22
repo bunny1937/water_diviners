@@ -237,12 +237,17 @@
   .processContainer {
     grid-template-columns: 1fr;
   }
-
+  .processSteps {
+    grid-template-rows: repeat(1, auto);
+    grid-template-columns: repeat(1, 1fr);
+  }
   .visualization {
     order: 2;
     margin-top: var(--spacing-lg);
   }
-
+  .processSvg {
+    display: none;
+  }
   .processDetails {
     order: 1;
   }

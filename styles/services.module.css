@@ -329,4 +329,9 @@
   .servicesGrid {
     grid-template-columns: 1fr;
   }
+  .callToAction {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+  }
 }

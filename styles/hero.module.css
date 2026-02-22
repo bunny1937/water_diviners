@@ -73,8 +73,7 @@
 .heroContainer {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: var(--spacing-md);
   align-items: center;
 }
@@ -389,7 +388,9 @@
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
   }
-
+  .scrollIndicator {
+    display: none;
+  }
   .heroVisual {
     height: 400px;
   }
@@ -434,10 +435,12 @@
 
 @media (max-width: 468px) {
   .heroContainer {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-md);
+    flex-direction: column-reverse;
+    gap: var(--spacing-xl);
   }
-
+  .heroContent {
+    margin-top: 2rem;
+  }
   .heroVisual {
     height: 400px;
   }

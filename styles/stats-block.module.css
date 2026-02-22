@@ -1,7 +1,7 @@
 .statsBlock {
   position: relative;
-  margin-top: var(--spacing-xl);
-  padding: var(--spacing-lg) 0;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-md) 0;
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(0, 119, 190, 0.1);
@@ -17,6 +17,8 @@
 .statItem {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+
   align-items: center;
   text-align: center;
   padding: var(--spacing-md);
@@ -128,5 +130,27 @@
 @media (max-width: 968px) {
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .statItem {
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+  }
+
+  .statIcon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .statIcon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .statNumber {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
   }
 }
