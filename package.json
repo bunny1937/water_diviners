@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^4.0.1",
     "@studio-freight/lenis": "^1.0.42",
     "@uploadthing/react": "^7.3.3",
     "bcryptjs": "^2.4.3",
@@ -21,7 +22,6 @@
     "next-auth": "^4.24.13",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "resend": "^6.9.2",
     "server-only": "^0.0.1",
     "uploadthing": "^7.7.4"
   },

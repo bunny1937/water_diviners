@@ -29,13 +29,13 @@ export async function POST(req) {
     const hashed = await bcrypt.hash(newPassword, 12);
     await Admin.findByIdAndUpdate(record.adminId, { password: hashed });
 
-    // Mark token as used
     record.used = true;
     await record.save();
 
+    console.log("✅ Password reset for admin:", record.adminId);
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("Reset password error:", err);
+    console.error("❌ Reset password error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
