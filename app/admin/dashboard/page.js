@@ -42,6 +42,11 @@ export default async function Dashboard() {
       label: "🔑 Change Password",
       desc: "Update your admin password",
     },
+    {
+      href: "/admin/reviews",
+      label: "Manage Reviews",
+      desc: "View and delete customer reviews",
+    },
   ];
 
   return (

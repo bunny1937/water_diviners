@@ -423,7 +423,7 @@
   }
 
   .brandName {
-    font-size: var(--font-size-4xl);
+    font-size: var(--font-size-3xl);
   }
 
   .ctaPrimary,
@@ -439,7 +439,7 @@
     gap: var(--spacing-xl);
   }
   .heroContent {
-    margin-top: 2rem;
+    margin-top: 5rem;
   }
   .heroVisual {
     height: 400px;

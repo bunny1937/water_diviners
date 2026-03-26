@@ -1,12 +1,16 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 import styles from "@/styles/journey.module.css";
 
 export default function JourneySectionClient({ c }) {
   const [activeCard, setActiveCard] = useState(0);
-  const sectionRef = useRef(null);
-  const cardsRef = useRef([]);
-
+  const swiperRef = useRef(null);
+  const holdRef = useRef(false);
+  const releaseTimerRef = useRef(null);
   const journeySteps = [
     {
       id: 1,
@@ -50,32 +54,7 @@ export default function JourneySectionClient({ c }) {
     },
   ];
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const section = sectionRef.current;
-      const sectionTop = section.offsetTop;
-      const scrollPosition = window.scrollY;
-
-      // Calculate which card should be active based on scroll position
-      // Each card needs approximately viewport height to fully appear
-      const relativeScroll = scrollPosition - sectionTop;
-      const cardIndex = Math.min(
-        Math.floor(relativeScroll / (window.innerHeight * 0.6)),
-        journeySteps.length - 1,
-      );
-
-      if (cardIndex >= 0 && cardIndex !== activeCard) {
-        setActiveCard(cardIndex);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeCard, journeySteps.length]);
-
-  const getIcon = (iconName) => {
+  const getIcon = (name) => {
     const icons = {
       search: (
         <svg
@@ -134,27 +113,94 @@ export default function JourneySectionClient({ c }) {
         </svg>
       ),
     };
-    return icons[iconName] || icons.search;
+    return icons[name] || icons.search;
   };
 
   return (
-    <section className={styles.journeySection} ref={sectionRef}>
-      <div className="container">
-        <div className={styles.sectionHeader}>
-          <h2 className="section-title">
-            {c.sectionTitle || "Our Journey With You"}
-          </h2>
-          <p className="section-subtitle">
-            {c.sectionSubtitle || "From first contact to water discovery"}
-          </p>
+    <section className={styles.journeySection}>
+      {/* ══ DESKTOP ══════════════════════════════════════════════ */}
+      <div className={styles.desktopOnly}>
+        <div className="container">
+          <div className={styles.sectionHeader}>
+            <h2 className="section-title">
+              {c.sectionTitle || "Our Journey With You"}
+            </h2>
+            <p className="section-subtitle">
+              {c.sectionSubtitle || "From first contact to water discovery"}
+            </p>
+          </div>
+          <div className={styles.journeyContainer}>
+            <div className={styles.cardsContainer}>
+              {journeySteps.map((step, index) => (
+                <div
+                  key={step.id}
+                  className={`${styles.journeyCard} ${index === activeCard ? styles.active : ""}`}
+                  style={{ "--card-index": index, "--card-color": step.color }}
+                >
+                  <div className={styles.cardIcon}>{getIcon(step.icon)}</div>
+                  <div className={styles.cardContent}>
+                    <div className={styles.cardNumber}>Step {step.id}</div>
+                    <h3 className={styles.cardTitle}>{step.title}</h3>
+                    <h4 className={styles.cardSubtitle}>{step.subtitle}</h4>
+                    <p className={styles.cardDescription}>{step.description}</p>
+                  </div>
+                  <div className={styles.cardDecoration} />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className={styles.journeyContainer}>
-          <div className={styles.cardsContainer}>
-            {journeySteps.map((step, index) => (
+      </div>
+
+      {/* ══ MOBILE: Swiper ═══════════════════════════════════════ */}
+      <div className={styles.mobileOnly}>
+        <div className="container">
+          <div className={styles.sectionHeader}>
+            <h2 className="section-title">
+              {c.sectionTitle || "Our Journey With You"}
+            </h2>
+            <p className="section-subtitle">
+              {c.sectionSubtitle || "From first contact to water discovery"}
+            </p>
+          </div>
+        </div>
+        <Swiper
+          modules={[Mousewheel, Pagination]}
+          mousewheel={{ releaseOnEdges: false, thresholdDelta: 10 }}
+          pagination={{ clickable: true }}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+          }}
+          onSlideChange={(swiper) => {
+            setActiveCard(swiper.activeIndex);
+            holdRef.current = false;
+            clearTimeout(releaseTimerRef.current);
+          }}
+          onReachEnd={() => {
+            holdRef.current = true;
+            clearTimeout(releaseTimerRef.current);
+            releaseTimerRef.current = setTimeout(() => {
+              holdRef.current = false;
+            }, 800);
+          }}
+          onReachBeginning={() => {
+            holdRef.current = true;
+            clearTimeout(releaseTimerRef.current);
+            releaseTimerRef.current = setTimeout(() => {
+              holdRef.current = false;
+            }, 800);
+          }}
+          onTouchStart={() => {
+            holdRef.current = false;
+          }}
+          spaceBetween={16}
+          slidesPerView={1}
+          className={styles.swiperContainer}
+        >
+          {journeySteps.map((step, index) => (
+            <SwiperSlide key={step.id} className={styles.swiperSlide}>
               <div
-                key={step.id}
-                ref={(el) => (cardsRef.current[index] = el)}
-                className={`${styles.journeyCard} ${index === activeCard ? styles.active : ""} ${index < activeCard ? styles.passed : ""}`}
+                className={`${styles.journeyCard} ${index === activeCard ? styles.active : ""}`}
                 style={{ "--card-index": index, "--card-color": step.color }}
               >
                 <div className={styles.cardIcon}>{getIcon(step.icon)}</div>
@@ -166,9 +212,9 @@ export default function JourneySectionClient({ c }) {
                 </div>
                 <div className={styles.cardDecoration} />
               </div>
-            ))}
-          </div>
-        </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </section>
   );

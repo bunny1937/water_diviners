@@ -8,13 +8,21 @@
   margin-bottom: var(--spacing-lg);
 }
 
+/* ── Desktop ────────────────────────────────────────────────── */
+.desktopOnly {
+  display: block;
+}
+
+.mobileOnly {
+  display: none;
+}
+
 .processContainer {
   display: flex;
   align-items: center;
   flex-direction: column;
 }
 
-/* Visualization */
 .visualization {
   display: flex;
   justify-content: center;
@@ -89,7 +97,6 @@
   }
 }
 
-/* Process Details */
 .processDetails {
   display: flex;
   flex-direction: column;
@@ -98,8 +105,8 @@
 
 .processSteps {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columns */
-  grid-template-rows: repeat(2, auto); /* 2 rows */
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-md);
 }
@@ -200,7 +207,6 @@
   flex-shrink: 0;
 }
 
-/* Process Footer */
 .processFooter {
   margin-top: var(--spacing-md);
 }
@@ -232,13 +238,58 @@
   font-weight: 600;
 }
 
-/* Responsive */
-@media (max-width: 968px) {
-  .processContainer {
-    grid-template-columns: 1fr;
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .processSection {
+    height: auto;
+    overflow: visible;
+    padding-bottom: var(--spacing-lg);
   }
+
+  .desktopOnly {
+    display: none;
+  }
+
+  .mobileOnly {
+    display: block;
+  }
+
+  .mobileOnly .sectionHeader {
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+    margin-bottom: 0;
+  }
+
+  .swiperContainer {
+    width: 100%;
+    padding: 0 16px 48px !important;
+    box-sizing: border-box;
+  }
+
+  .swiperSlide {
+    height: auto;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .swiperSlide .stepCard {
+    width: 100%;
+    transform: none !important;
+    cursor: default;
+  }
+
+  :global(.swiper-pagination-bullet) {
+    background: var(--color-light-gray, #ddd);
+    opacity: 1;
+  }
+
+  :global(.swiper-pagination-bullet-active) {
+    background: var(--color-primary, #0077be);
+    transform: scale(1.3);
+  }
+}
+/* ── Tablet (769–968px) ─────────────────────────────────────── */
+@media (min-width: 769px) and (max-width: 968px) {
   .processSteps {
-    grid-template-rows: repeat(1, auto);
     grid-template-columns: repeat(1, 1fr);
   }
   .visualization {

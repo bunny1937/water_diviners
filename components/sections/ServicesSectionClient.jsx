@@ -1,10 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 import styles from "@/styles/services.module.css";
 
 export default function ServicesSectionClient({ c }) {
   const [hoveredService, setHoveredService] = useState(null);
-
+  const [activeCard, setActiveCard] = useState(0);
+  const swiperRef = useRef(null);
+  const holdRef = useRef(false);
+  const releaseTimerRef = useRef(null);
   const services = [
     {
       id: 1,
@@ -157,9 +164,88 @@ export default function ServicesSectionClient({ c }) {
     return icons[iconName] || icons.scan;
   };
 
+  const renderCard = (service, index, isMobile = false) => (
+    <div
+      key={service.id}
+      className={`${styles.serviceCard} ${!isMobile && hoveredService === service.id ? styles.hovered : ""}`}
+      onMouseEnter={() => !isMobile && setHoveredService(service.id)}
+      onMouseLeave={() => !isMobile && setHoveredService(null)}
+      style={{
+        "--service-color": service.color,
+        "--animation-delay": `${index * 0.1}s`,
+      }}
+    >
+      <div className={styles.cardBackground} />
+      <div className={styles.cardIcon}>{getIcon(service.icon)}</div>
+      <h3 className={styles.cardTitle}>{service.title}</h3>
+      <p className={styles.cardDescription}>{service.description}</p>
+      <ul className={styles.featureList}>
+        {service.features.filter(Boolean).map((feature, i) => (
+          <li key={i} className={styles.featureItem}>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M9 11l3 3L22 4" />
+            </svg>
+            {feature}
+          </li>
+        ))}
+      </ul>
+      <div className={styles.cardFooter}>
+        <button className={styles.learnMore}>
+          Learn More
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <section className={styles.servicesSection}>
-      <div className="container">
+      {/* ══ DESKTOP ══════════════════════════════════════════════ */}
+      <div className={styles.desktopOnly}>
+        <div className="container">
+          <div className={styles.sectionHeader}>
+            <h2 className="section-title">
+              {c.sectionTitle || "Our Services"}
+            </h2>
+            <p className="section-subtitle">
+              {c.sectionSubtitle ||
+                "Comprehensive groundwater survey solutions tailored to your needs"}
+            </p>
+          </div>
+          <div className={styles.servicesGrid}>
+            {services.map((service, index) =>
+              renderCard(service, index, false),
+            )}
+          </div>
+          <div className={styles.callToAction}>
+            <h3 className={styles.ctaTitle}>
+              {c.ctaTitle || "Need a Custom Solution?"}
+            </h3>
+            <p className={styles.ctaText}>
+              {c.ctaText ||
+                "Every project is unique. Contact us to discuss your specific requirements."}
+            </p>
+            <a href="/contact" className={styles.ctaButton}>
+              {c.ctaButtonLabel || "Get in Touch"}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* ══ MOBILE: Swiper ═══════════════════════════════════════ */}
+      <div className={styles.mobileOnly}>
         <div className={styles.sectionHeader}>
           <h2 className="section-title">{c.sectionTitle || "Our Services"}</h2>
           <p className="section-subtitle">
@@ -167,63 +253,46 @@ export default function ServicesSectionClient({ c }) {
               "Comprehensive groundwater survey solutions tailored to your needs"}
           </p>
         </div>
-
-        <div className={styles.servicesGrid}>
+        <Swiper
+          modules={[Mousewheel, Pagination]}
+          mousewheel={{ releaseOnEdges: false, thresholdDelta: 10 }}
+          pagination={{ clickable: true }}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+          }}
+          onSlideChange={(swiper) => {
+            setActiveCard(swiper.activeIndex);
+            holdRef.current = false;
+            clearTimeout(releaseTimerRef.current);
+          }}
+          onReachEnd={() => {
+            holdRef.current = true;
+            clearTimeout(releaseTimerRef.current);
+            releaseTimerRef.current = setTimeout(() => {
+              holdRef.current = false;
+            }, 800);
+          }}
+          onReachBeginning={() => {
+            holdRef.current = true;
+            clearTimeout(releaseTimerRef.current);
+            releaseTimerRef.current = setTimeout(() => {
+              holdRef.current = false;
+            }, 800);
+          }}
+          onTouchStart={() => {
+            holdRef.current = false;
+          }}
+          spaceBetween={12}
+          slidesPerView={1}
+          className={styles.swiperContainer}
+        >
           {services.map((service, index) => (
-            <div
-              key={service.id}
-              className={`${styles.serviceCard} ${hoveredService === service.id ? styles.hovered : ""}`}
-              onMouseEnter={() => setHoveredService(service.id)}
-              onMouseLeave={() => setHoveredService(null)}
-              style={{
-                "--service-color": service.color,
-                "--animation-delay": `${index * 0.1}s`,
-              }}
-            >
-              <div className={styles.cardBackground} />
-              <div className={styles.cardIcon}>{getIcon(service.icon)}</div>
-              <h3 className={styles.cardTitle}>{service.title}</h3>
-              <p className={styles.cardDescription}>{service.description}</p>
-              <ul className={styles.featureList}>
-                {service.features.filter(Boolean).map((feature, i) => (
-                  <li key={i} className={styles.featureItem}>
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M9 11l3 3L22 4" />
-                    </svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <div className={styles.cardFooter}>
-                <button className={styles.learnMore}>
-                  Learn More
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
+            <SwiperSlide key={service.id} className={styles.swiperSlide}>
+              {renderCard(service, index, true)}
+            </SwiperSlide>
           ))}
-        </div>
-
-        <div className={styles.callToAction}>
-          <h3 className={styles.ctaTitle}>
-            {c.ctaTitle || "Need a Custom Solution?"}
-          </h3>
-          <p className={styles.ctaText}>
-            {c.ctaText ||
-              "Every project is unique. Contact us to discuss your specific requirements."}
-          </p>
+        </Swiper>
+        <div className={styles.mobileCta}>
           <a href="/contact" className={styles.ctaButton}>
             {c.ctaButtonLabel || "Get in Touch"}
           </a>

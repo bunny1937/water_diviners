@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { connectDB } from "@/lib/db";
+import User from "@/models/User";
 
 export const authOptions = {
   providers: [
@@ -12,22 +14,54 @@ export const authOptions = {
     signIn: "/admin/login",
   },
   callbacks: {
-    async signIn({ user }) {
-      console.log("🧪 signIn:", user.email);
-      const isAllowed = user.email === process.env.ADMIN_GOOGLE_EMAIL;
-      console.log("🧪 signIn allowed?", isAllowed);
-      return isAllowed;
+    async signIn({ user, account }) {
+      // Always allow — we do NOT restrict by email anymore for public users
+      // But we DO persist public users to our DB
+      try {
+        if (account?.provider === "google") {
+          await connectDB();
+          await User.findOneAndUpdate(
+            { googleId: account.providerAccountId },
+            {
+              googleId: account.providerAccountId,
+              email: user.email,
+              name: user.name,
+              image: user.image || "",
+            },
+            { upsert: true, new: true },
+          );
+        }
+      } catch (err) {
+        console.error("Error upserting user on signIn:", err);
+        // Don't block sign-in if DB write fails
+      }
+      return true; // allow all Google users
+    },
+
+    async jwt({ token, account, profile }) {
+      if (account?.provider === "google") {
+        token.googleId = account.providerAccountId;
+        token.isAdmin = token.email === process.env.ADMIN_GOOGLE_EMAIL;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      session.user.googleId = token.googleId;
+      session.isAdmin = token.isAdmin || false;
+      return session;
     },
 
     async redirect({ url, baseUrl }) {
-      // After successful signIn, redirect to dashboard
-      if (url.startsWith("/admin/dashboard")) return url;
-      return `${baseUrl}/admin/dashboard`;
+      // After admin login, go to dashboard
+      if (url.startsWith("/admin") || url.includes("admindashboard")) {
+        return `${baseUrl}/admin/dashboard`;
+      }
+      // For public users, go back to homepage
+      return baseUrl;
     },
   },
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
 };
 

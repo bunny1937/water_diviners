@@ -1,5 +1,5 @@
+/* ── Shared ─────────────────────────────────────────────────── */
 .journeySection {
-  padding: var(--spacing-md) 0;
   background: linear-gradient(
     180deg,
     var(--color-off-white) 0%,
@@ -7,7 +7,6 @@
   );
   position: relative;
   overflow: hidden;
-  min-height: 100vh;
 }
 
 .journeySection::before {
@@ -29,6 +28,18 @@
   text-align: center;
   position: relative;
   z-index: 1;
+  padding: var(--spacing-md) 0 var(--spacing-md);
+}
+
+/* ── Desktop ─────────────────────────────────────────────────── */
+.desktopOnly {
+  display: block;
+  padding: var(--spacing-md) 0;
+  min-height: 100vh;
+}
+
+.mobileOnly {
+  display: none;
 }
 
 .journeyContainer {
@@ -37,23 +48,19 @@
   max-width: 1000px;
   margin: 0 auto;
   position: relative;
-  /* Height based on: 100vh for viewport + (5 cards * (card height + gap + offset)) */
   min-height: 100vh;
 }
 
-/* Cards Container */
 .cardsContainer {
   position: relative;
   flex: 1;
   display: grid;
-  flex-direction: column;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   padding: 20px 0;
   height: 100%;
 }
 
-/* Journey Cards - Stacking Effect */
 .journeyCard {
   background: var(--color-white);
   border-radius: var(--radius-lg);
@@ -149,33 +156,53 @@
   pointer-events: none;
 }
 
-/* Responsive */
+/* ── Mobile ─────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .journeyContainer {
-    flex-direction: column;
-    min-height: 300vh;
+  .desktopOnly {
+    display: none;
   }
 
-  .timeline {
-    position: static;
-    width: 100%;
-    gap: 40px;
-    margin-bottom: var(--spacing-lg);
+  .mobileOnly {
+    display: block;
+  }
+
+  .journeySection {
     height: auto;
+    overflow: visible;
+    padding-bottom: var(--spacing-lg);
   }
 
-  .cardsContainer {
+  .swiperContainer {
     width: 100%;
-    grid-template-rows: repeat(1, auto);
-    grid-template-columns: repeat(1, 1fr);
+    padding: 0 16px 48px !important;
+    box-sizing: border-box;
   }
 
-  .journeyCard {
-    min-height: 250px;
-    margin-bottom: 40px;
+  .swiperSlide {
+    height: auto;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .swiperSlide .journeyCard {
+    position: static !important;
+    top: unset !important;
+    width: 100%;
+    min-height: unset;
   }
 
   .cardTitle {
     font-size: var(--font-size-xl);
+  }
+
+  /* Swiper pagination dots */
+  :global(.swiper-pagination-bullet) {
+    background: var(--color-light-gray, #ddd);
+    opacity: 1;
+  }
+
+  :global(.swiper-pagination-bullet-active) {
+    background: var(--color-primary, #0077be);
+    transform: scale(1.3);
   }
 }

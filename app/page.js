@@ -6,6 +6,7 @@ import ProcessSection from "@/components/sections/ProcessSection";
 import ServicesSection from "@/components/sections/ServicesSection";
 import styles from "./page.module.css";
 import { ScrollSection } from "@/components/sections/ScrollSection";
+import ReviewsSection from "@/components/sections/ReviewsSections";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <JourneySection />
       <ProcessSection />
       <ServicesSection />
+      <ReviewsSection />
       <Footer />
     </main>
   );

@@ -12,6 +12,7 @@ const nextConfig = {
         protocol: "https",
         hostname: "**.ufs.sh", // UploadThing v7 new CDN
       },
+      { protocol: "https", hostname: "lh3.googleusercontent.com" }, // ADD for Google profile pics
     ],
   },
 };
