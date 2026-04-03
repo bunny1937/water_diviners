@@ -6,10 +6,8 @@
   margin: 0;
 }
 
-html,
-body {
+html {
   max-width: 100vw;
-  overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
@@ -181,4 +179,8 @@ img {
 ::selection {
   background-color: var(--color-accent);
   color: var(--color-white);
+}
+
+iframe[title="MMS Story Hero"] {
+  pointer-events: all;
 }

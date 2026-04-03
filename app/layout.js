@@ -8,7 +8,11 @@ export const metadata = {
   keywords:
     "water diviner, groundwater survey, borewell, Kankavli, geophysical survey, water detection, Dhananjay Sawant",
 };
-
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0a0a0a",
+};
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

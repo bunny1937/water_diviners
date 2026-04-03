@@ -66,4 +66,19 @@ export const authOptions = {
 };
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+
+async function wrappedHandler(req, res) {
+  const response = await handler(req, res);
+  // Replace no-store with private to allow bfcache
+  if (response instanceof Response) {
+    const newHeaders = new Headers(response.headers);
+    newHeaders.set("Cache-Control", "private, max-age=0, must-revalidate");
+    return new Response(response.body, {
+      status: response.status,
+      headers: newHeaders,
+    });
+  }
+  return response;
+}
+
+export { wrappedHandler as GET, wrappedHandler as POST };

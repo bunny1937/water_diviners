@@ -21,11 +21,25 @@ export default function NavbarClient({
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
-    { href: "/services", label: "Services" },
-    { href: "/contact", label: "Contact" },
+    { href: "#about", label: "About" },
+    { href: "#services", label: "Services" },
+    { href: "#contact", label: "Contact" },
     ...(isAdmin ? [{ href: "/admin/dashboard", label: "⚙️ Admin" }] : []),
   ];
+
+  const handleNavClick = (e, href) => {
+    if (!href.startsWith("#")) return;
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+
+    if (window.location.pathname !== "/") {
+      window.location.href = "/" + href;
+      return;
+    }
+
+    const target = document.querySelector(href);
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <nav className={`${styles.navbar} ${isScrolled ? styles.scrolled : ""}`}>
@@ -52,7 +66,12 @@ export default function NavbarClient({
           </div>
           <div className={styles.logoText}>
             <span className={styles.brandName}>{brandName}</span>
-            <span className={styles.brandTagline}>{brandTagline}</span>
+            <span
+              className={styles.brandTagline}
+              style={{ contentVisibility: "visible" }}
+            >
+              {brandTagline}
+            </span>
           </div>
         </Link>
 
@@ -60,9 +79,13 @@ export default function NavbarClient({
         <ul className={styles.navLinks}>
           {navLinks.map((link) => (
             <li key={link.href}>
-              <Link href={link.href} className={styles.navLink}>
+              <a
+                href={link.href}
+                className={styles.navLink}
+                onClick={(e) => handleNavClick(e, link.href)}
+              >
                 {link.label}
-              </Link>
+              </a>
             </li>
           ))}
         </ul>
@@ -99,13 +122,13 @@ export default function NavbarClient({
         <ul className={styles.mobileNavLinks}>
           {navLinks.map((link) => (
             <li key={link.href}>
-              <Link
+              <a
                 href={link.href}
                 className={styles.mobileNavLink}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={(e) => handleNavClick(e, link.href)}
               >
                 {link.label}
-              </Link>
+              </a>
             </li>
           ))}
         </ul>

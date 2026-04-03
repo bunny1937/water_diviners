@@ -229,7 +229,7 @@ export default function ServicesSectionClient({ c }) {
               renderCard(service, index, false),
             )}
           </div>
-          <div className={styles.callToAction}>
+          {/* <div className={styles.callToAction}>
             <h3 className={styles.ctaTitle}>
               {c.ctaTitle || "Need a Custom Solution?"}
             </h3>
@@ -240,7 +240,7 @@ export default function ServicesSectionClient({ c }) {
             <a href="/contact" className={styles.ctaButton}>
               {c.ctaButtonLabel || "Get in Touch"}
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -292,11 +292,6 @@ export default function ServicesSectionClient({ c }) {
             </SwiperSlide>
           ))}
         </Swiper>
-        <div className={styles.mobileCta}>
-          <a href="/contact" className={styles.ctaButton}>
-            {c.ctaButtonLabel || "Get in Touch"}
-          </a>
-        </div>
       </div>
     </section>
   );

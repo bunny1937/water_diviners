@@ -1,23 +1,27 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/hero/Hero";
-import JourneySection from "@/components/sections/JourneySection";
-import ProcessSection from "@/components/sections/ProcessSection";
-import ServicesSection from "@/components/sections/ServicesSection";
+import SectionsClient from "@/components/sections/SectionsClient";
+import { getSiteContent } from "@/lib/getSiteContent";
 import styles from "./page.module.css";
-import { ScrollSection } from "@/components/sections/ScrollSection";
 import ReviewsSection from "@/components/sections/ReviewsSections";
 
-export default function Home() {
+export default async function Home() {
+  const [journey, process, services] = await Promise.all([
+    getSiteContent("journey"),
+    getSiteContent("process"),
+    getSiteContent("services"),
+  ]);
+
   return (
     <main className={styles.main}>
       <Navbar />
       <Hero />
-      <JourneySection />
-      <ProcessSection />
-      <ServicesSection />
+      <SectionsClient journey={journey} process={process} services={services} />
       <ReviewsSection />
-      <Footer />
+      <div id="contact">
+        <Footer />
+      </div>
     </main>
   );
 }

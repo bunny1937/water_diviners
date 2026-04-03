@@ -38,6 +38,7 @@
 
 .centerCircle {
   animation: pulse 3s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 @keyframes pulse {
@@ -76,11 +77,15 @@
 @keyframes nodeActive {
   0%,
   100% {
-    filter: drop-shadow(0 0 10px rgba(0, 119, 190, 0.5));
+    opacity: 0.7;
   }
   50% {
-    filter: drop-shadow(0 0 20px rgba(0, 119, 190, 0.8));
+    opacity: 1;
   }
+}
+.processNode.active {
+  animation: nodeActive 1s ease-in-out infinite;
+  /* remove filter-based animation — filter forces repaint every frame */
 }
 
 .centerIcon {
@@ -125,6 +130,7 @@
   border-color: var(--color-accent);
   transform: translateX(10px);
   box-shadow: var(--shadow-md);
+  will-change: transform;
 }
 
 .stepCard.active {
@@ -198,6 +204,7 @@
   border-radius: var(--radius-md);
   animation: slideInRight 0.4s ease-out both;
   animation-delay: calc(var(--item-index) * 0.1s);
+  will-change: transform, opacity;
 }
 
 .detailItem svg {
