@@ -1,21 +1,188 @@
 import Providers from "@/components/layout/Providers";
 import "./globals.css";
 
+const BASE_URL = "https://mmswaterdiviners.in";
+
 export const metadata = {
-  title: "M.M.S Water Diviners | Professional Groundwater Survey Experts",
+  metadataBase: new URL(BASE_URL),
+
+  title: {
+    default: "M.M.S Water Diviners | Groundwater Survey Expert Kankavli",
+    template: "%s | M.M.S Water Diviners",
+  },
+
   description:
-    "M.M.S Water Diviners, owned by Dhananjay Manohar Sawant, is a professional groundwater survey company in Kankavli. We provide groundwater scanning, borewell point marking, depth estimation with 10 years of experience.",
-  keywords:
-    "water diviner, groundwater survey, borewell, Kankavli, geophysical survey, water detection, Dhananjay Sawant",
+    "M.M.S Water Diviners — Dhananjay Manohar Sawant, Kankavli's top geophysical groundwater survey expert. Borewell point marking, depth estimation, 95% success rate, 10+ years experience. Call 9370427023.",
+
+  keywords: [
+    "water diviner Kankavli",
+    "groundwater survey Maharashtra",
+    "borewell expert Sindhudurg",
+    "geophysical survey Kankavli",
+    "Dhananjay Sawant water survey",
+    "borewell point marking",
+    "MMS Water Diviners",
+    "aquifer detection Maharashtra",
+  ],
+
+  authors: [{ name: "Dhananjay Manohar Sawant" }],
+  creator: "M.M.S Water Diviners",
+  publisher: "M.M.S Water Diviners",
+
+  alternates: {
+    canonical: BASE_URL,
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: BASE_URL,
+    siteName: "M.M.S Water Diviners",
+    title: "M.M.S Water Diviners | Groundwater Survey Expert Kankavli",
+    description:
+      "Professional groundwater scanning & borewell experts in Kankavli, Maharashtra. 10+ years experience. 95% success rate. Call 9370427023.",
+    images: [
+      {
+        url: "/og-image.png", // → create this file! (see below)
+        width: 1200,
+        height: 630,
+        alt: "M.M.S Water Diviners - Professional Groundwater Survey Kankavli",
+        type: "image/png",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "M.M.S Water Diviners | Groundwater Survey Kankavli",
+    description:
+      "Borewell experts in Kankavli, Maharashtra. 10+ years experience. 95% success rate.",
+    images: ["/og-image.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+
+  // ⚠️ After Google Search Console verifies you, paste the code here:
+  verification: {
+    google: "PASTE_YOUR_GOOGLE_VERIFICATION_CODE_HERE",
+  },
 };
+
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0a0a0a",
+  themeColor: "#0077be",
 };
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+
+        {/* JSON-LD — tells Google this is a Local Business with rich data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              "@id": "https://mmswaterdiviners.in",
+              name: "M.M.S Water Diviners",
+              alternateName: "MMS Water Diviners",
+              description:
+                "Professional geophysical groundwater survey experts in Kankavli, Maharashtra. Specializing in borewell point marking, depth estimation, and aquifer detection.",
+              url: "https://mmswaterdiviners.in",
+              telephone: "+919370427023",
+              email: "dhananjays637@gmail.com",
+              founder: {
+                "@type": "Person",
+                name: "Dhananjay Manohar Sawant",
+                jobTitle: "Geophysical Water Survey Expert",
+              },
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "Kankavli",
+                addressRegion: "Maharashtra",
+                addressCountry: "IN",
+                postalCode: "416602",
+              },
+              geo: {
+                "@type": "GeoCoordinates",
+                latitude: "16.5575",
+                longitude: "73.7089",
+              },
+              areaServed: [
+                "Kankavli",
+                "Sindhudurg",
+                "Malvan",
+                "Kudal",
+                "Sawantwadi",
+                "Maharashtra",
+              ],
+              hasOfferCatalog: {
+                "@type": "OfferCatalog",
+                name: "Groundwater Survey Services",
+                itemListElement: [
+                  {
+                    "@type": "Offer",
+                    itemOffered: {
+                      "@type": "Service",
+                      name: "Groundwater Scanning",
+                    },
+                  },
+                  {
+                    "@type": "Offer",
+                    itemOffered: {
+                      "@type": "Service",
+                      name: "Borewell Point Marking",
+                    },
+                  },
+                  {
+                    "@type": "Offer",
+                    itemOffered: {
+                      "@type": "Service",
+                      name: "Depth Estimation",
+                    },
+                  },
+                  {
+                    "@type": "Offer",
+                    itemOffered: {
+                      "@type": "Service",
+                      name: "Yield Prediction",
+                    },
+                  },
+                  {
+                    "@type": "Offer",
+                    itemOffered: {
+                      "@type": "Service",
+                      name: "Geophysical Survey",
+                    },
+                  },
+                ],
+              },
+              foundingDate: "2012",
+              priceRange: "₹₹",
+              image: "https://mmswaterdiviners.in/og-image.png",
+              sameAs: ["https://wa.me/9370427023"],
+            }),
+          }}
+        />
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>

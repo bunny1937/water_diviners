@@ -1,6 +1,10 @@
 import { getSiteContent } from "@/lib/getSiteContent";
 import CMSEditor from "./CMSEditor";
 
+export const metadata = {
+  robots: { index: false, follow: false },
+};
+
 export default async function CMSPage() {
   const [hero, stats, journey, process, services, footer, navbar] =
     await Promise.all([

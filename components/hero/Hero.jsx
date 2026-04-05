@@ -115,11 +115,11 @@ export default function Hero() {
     /* ── LAYER LABELS ── */
     const layerTriggers = {
       ll1: 0,
-      ll2: 0.12,
-      ll3: 0.27,
-      ll4: 0.42,
-      ll5: 0.58,
-      ll6: 0.74,
+      ll2: 0.1,
+      ll3: 0.22,
+      ll4: 0.38,
+      ll5: 0.56, // S9 — Deep Rock: pipe tip here at p2 ~0.75, label fires slightly early
+      ll6: 0.72, // S10 — Pre-Aquifer: label fires as water starts rising
     };
     function showLayerLabel(id) {
       const el = $("#" + id);
@@ -143,29 +143,13 @@ export default function Hero() {
         container.appendChild(b);
       }
     }
-    createBubbles($("#s3bubbles"), 22);
+    createBubbles($("#s2bubbles"), 22);
 
     /* ── S2 DEBRIS CANVAS ── */
     const s2dCanvas = $("#s2-debris-canvas");
     const s2dCtx = s2dCanvas.getContext("2d");
     s2dCanvas.width = document.documentElement.clientWidth;
     s2dCanvas.height = document.documentElement.clientHeight;
-
-    /* ── S3 DEBRIS CANVAS ── */
-    const s3dCanvas = $("#s3-debris-canvas");
-    const s3dCtx = s3dCanvas.getContext("2d");
-    s3dCanvas.width = document.documentElement.clientWidth;
-    s3dCanvas.height = document.documentElement.clientHeight;
-
-    const onResize = () => {
-      s2dCanvas.width = document.documentElement.clientWidth;
-      s2dCanvas.height = document.documentElement.clientHeight;
-      s3dCanvas.width = document.documentElement.clientWidth;
-      s3dCanvas.height = document.documentElement.clientHeight;
-      pcW = s3pCanvas.width = document.documentElement.clientWidth;
-      pcH = s3pCanvas.height = document.documentElement.clientHeight;
-    };
-    window.addEventListener("resize", onResize);
 
     let debrisParticles2 = [];
     function spawnDebris2(tipX, tipY, active) {
@@ -211,48 +195,13 @@ export default function Hero() {
     }
     drawDebris2();
 
-    let debrisParticles3 = [];
-    function spawnDebris3(tipX, tipY, active) {
-      if (!active) return;
-      const colors = [
-        "#4A2E12",
-        "#2A1808",
-        "#1A1410",
-        "#16100D",
-        "rgba(201,168,76,.5)",
-      ];
-      for (let i = 0; i < 3; i++) {
-        debrisParticles3.push({
-          x: tipX + (Math.random() - 0.5) * 14,
-          y: tipY,
-          vx: (Math.random() - 0.5) * 3.5,
-          vy: -(Math.random() * 2.5 + 0.5),
-          size: 2 + Math.random() * 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          life: 1.0,
-          decay: 0.03 + Math.random() * 0.04,
-          gravity: 0.12,
-        });
-      }
-    }
-    function drawDebris3() {
-      s3dCtx.clearRect(0, 0, s3dCanvas.width, s3dCanvas.height);
-      debrisParticles3 = debrisParticles3.filter((p) => p.life > 0);
-      debrisParticles3.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += p.gravity;
-        p.life -= p.decay;
-        s3dCtx.globalAlpha = Math.max(0, p.life * 0.8);
-        s3dCtx.beginPath();
-        s3dCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        s3dCtx.fillStyle = p.color;
-        s3dCtx.fill();
-      });
-      s3dCtx.globalAlpha = 1;
-      requestAnimationFrame(drawDebris3);
-    }
-    drawDebris3();
+    const onResize = () => {
+      s2dCanvas.width = document.documentElement.clientWidth;
+      s2dCanvas.height = document.documentElement.clientHeight;
+      pcW = s3pCanvas.width = document.documentElement.clientWidth;
+      pcH = s3pCanvas.height = document.documentElement.clientHeight;
+    };
+    window.addEventListener("resize", onResize);
 
     /* ── S3 PARTICLE CANVAS (stats phase) ── */
     const s3pCanvas = $("#s3-particle-canvas");
@@ -297,14 +246,15 @@ export default function Hero() {
     const s2pipe = $("#s2pipe");
     const s2pipeBody = $("#s2pipeBody");
     const s2headline = $("#s2headline");
-    const s3pipe = $("#s3pipe");
-    const s3pipeBody = $("#s3pipeBody");
-    const s3water = $("#s3water");
-    const s3success = $("#s3success");
-    const s3ripple1 = $("#s3ripple1");
-    const s3ripple2 = $("#s3ripple2");
-    const s3ripple3 = $("#s3ripple3");
-    const s3blueTint = $("#s3blueTint");
+    // Water/success/ripple elements now live inside sec2
+    const s2water = $("#s2water");
+    const s2success = $("#s2success");
+    const s2ripple1 = $("#s2ripple1");
+    const s2ripple2 = $("#s2ripple2");
+    const s2ripple3 = $("#s2ripple3");
+    const s2blueTint = $("#s2blueTint");
+    const s2pipeTip = $("#s2pipeTip");
+    // Gradient/stats remain in sec3
     const s3gradientOverlay = $("#s3gradientOverlay");
     const s3blurOrb1 = $("#s3blurOrb1");
     const s3blurOrb2 = $("#s3blurOrb2");
@@ -319,10 +269,10 @@ export default function Hero() {
 
     let successShown = false,
       waterFoundRising = false;
+    let pulseFired = false;
     let gradientShown = false,
       ctaShown = false;
-    let lastDebrisSpawn2 = 0,
-      lastDebrisSpawn3 = 0;
+    let lastDebrisSpawn2 = 0;
 
     function lerp(a, b, t) {
       return a + (b - a) * t;
@@ -362,128 +312,158 @@ export default function Hero() {
         const docH = document.body.scrollHeight - vh;
         progressBar.style.width = (scrollY / docH) * 100 + "%";
         scrollHint.classList.toggle("ha-hidden", scrollY > 80);
+        const vhH = document.documentElement.clientHeight;
+
         const now = performance.now();
         const centerX = document.documentElement.clientWidth / 2;
-        /* SECTION 2 SCROLL */
+
+        /* ── SECTION 2 SCROLL ── */
         const p2 = sectionProgress(sec2);
         if (p2 > 0.02) s2headline.classList.add("ha-show");
         for (const [id, threshold] of Object.entries(layerTriggers)) {
           if (p2 >= threshold) showLayerLabel(id);
         }
 
+        // PHASE A: Pipe drills down — tip reaches S9 at p2=0.75, stops at p2=0.85
         if (p2 <= 0) {
           s2pipe.style.opacity = "0";
           s2pipe.style.top = "-400px";
         } else {
           const fadeIn = clamp(p2 / 0.05, 0, 1);
-          s2pipe.style.opacity = fadeIn.toString();
-          const tipY = lerp(
-            vhH * 0.05,
-            vhH * 0.95,
-            clamp((p2 - 0.05) / 0.9, 0, 1),
-          );
+          if (p2 <= 0.92) {
+            s2pipe.style.opacity = fadeIn.toString();
+          }
+
+          // Pipe tip travels top→85%vh over p2 0→0.85, then stays put
+          const tipY = lerp(vhH * 0.05, vhH * 0.85, clamp(p2 / 0.85, 0, 1));
           const pipeExtend = tipY + 400;
           s2pipeBody.style.height = pipeExtend + "px";
           const containerTop = tipY - pipeExtend - 30 - 44;
           s2pipe.style.top = containerTop + "px";
-          if (p2 > 0.1 && p2 < 0.95 && now - lastDebrisSpawn2 > 80) {
+
+          // Debris while drilling — only before S9 (p2 < 0.73)
+          if (p2 > 0.05 && p2 < 0.73 && now - lastDebrisSpawn2 > 80) {
             spawnDebris2(centerX, tipY, true);
             lastDebrisSpawn2 = now;
           }
+
+          // PHASE B: Blue tint starts as pipe reaches S10 (~p2 0.70)
+          if (p2 > 0.7) {
+            const tintR = clamp((p2 - 0.7) / 0.1, 0, 1);
+            s2blueTint.style.opacity = easeOut(tintR) * 0.85;
+          } else {
+            s2blueTint.style.opacity = 0;
+          }
+
+          // PHASE C: Pulse fires when pipe tip touches S10 level (p2 0.83)
+          if (p2 >= 0.83 && !pulseFired) {
+            pulseFired = true;
+            s2pipeTip.classList.add("ha-pulse");
+          }
+          if (p2 < 0.8 && pulseFired) {
+            pulseFired = false;
+            s2pipeTip.classList.remove("ha-pulse");
+          }
+
+          // PHASE D: Water rises in sec2 — starts ONLY when pipe reaches S10 (p2: 0.74 → 0.92)
+          const waterStart2 = 0.74,
+            waterEnd2 = 0.92;
+          if (p2 > waterStart2) {
+            const wRatio = clamp(
+              (p2 - waterStart2) / (waterEnd2 - waterStart2),
+              0,
+              1,
+            );
+            // Water starts from S10 position (~85% down viewport) and rises to fill screen
+            const waterStartHeight = vhH * 0.15; // S10 is at ~85% viewport = 15% from bottom
+            const wHeight =
+              waterStartHeight +
+              easeOut(wRatio) * (vhH * 0.95 - waterStartHeight);
+            s2water.style.height = wHeight + "px";
+            const waterSurfaceY = vhH - wHeight;
+            [s2ripple1, s2ripple2, s2ripple3].forEach((r) => {
+              r.style.top = waterSurfaceY + "px";
+            });
+
+            // Headline scrolls up and fades in sync with water rise (wRatio 0 → 0.5)
+            const headlineExit = clamp(wRatio / 0.5, 0, 1);
+            s2headline.style.setProperty(
+              "transform",
+              `translateY(${-headlineExit * 140}px)`,
+              "important",
+            );
+            s2headline.style.setProperty(
+              "opacity",
+              (1 - headlineExit).toString(),
+              "important",
+            );
+            s2headline.style.visibility =
+              headlineExit >= 1 ? "hidden" : "visible";
+            s2headline.style.visibility =
+              headlineExit >= 1 ? "hidden" : "visible";
+
+            // Water Found text appears after headline is fully gone (wRatio > 0.6)
+            if (wRatio > 0.6 && !successShown) {
+              successShown = true;
+              s2success.classList.add("ha-show");
+            }
+            if (wRatio < 0.55 && successShown) {
+              successShown = false;
+              waterFoundRising = false;
+              s2success.classList.remove("ha-show");
+              s2success.classList.remove("ha-rising");
+            }
+          } else {
+            // Restore headline when water not yet risen
+            s2headline.style.setProperty(
+              "transform",
+              "translateY(0px)",
+              "important",
+            );
+            s2headline.style.setProperty("opacity", "1", "important");
+            s2headline.style.visibility = "visible";
+            s2water.style.height = "0px";
+            if (successShown) {
+              successShown = false;
+              waterFoundRising = false;
+              s2success.classList.remove("ha-show");
+              s2success.classList.remove("ha-rising");
+            }
+          }
+
+          // PHASE E: Pipe fades after water fully rises (~p2 0.90 → 0.96)
+          if (p2 > 0.9) {
+            const pipeFade = clamp(1 - (p2 - 0.9) / 0.06, 0, 1);
+            s2pipe.style.opacity = pipeFade.toString();
+          }
+
+          // Water found text holds then rises up and disappears (~p2 0.95)
+          if (p2 > 0.95 && !waterFoundRising) {
+            waterFoundRising = true;
+            s2success.classList.add("ha-rising");
+          }
+          if (p2 < 0.92 && waterFoundRising) {
+            waterFoundRising = false;
+            s2success.classList.remove("ha-rising");
+          }
         }
 
-        /* SECTION 3 SCROLL */
+        /* ── SECTION 3 SCROLL — gradient overlay + stats only ── */
         const p3 = sectionProgress(sec3);
 
-        // PHASE A: Drill descends (p3: 0 → 0.55)
-        if (p3 <= 0) {
-          s3pipe.style.opacity = "0";
-          s3pipe.style.top = "-500px";
-        } else if (p3 <= 0.55) {
-          const fIn = clamp(p3 / 0.04, 0, 1);
-          s3pipe.style.opacity = fIn.toString();
-          const tipY3 = lerp(vhH * 0.05, vhH * 0.95, clamp(p3 / 0.55, 0, 1));
-          const pe3 = tipY3 + 400;
-          s3pipeBody.style.height = pe3 + "px";
-          s3pipe.style.top = tipY3 - pe3 - 30 - 44 + "px";
-          if (p3 > 0.02 && p3 < 0.55 && now - lastDebrisSpawn3 > 80) {
-            spawnDebris3(centerX, tipY3, true);
-            lastDebrisSpawn3 = now;
-          }
-        } else {
-          const tipY3Static = vhH * 0.95;
-          const pe3s = tipY3Static + 400;
-          s3pipeBody.style.height = pe3s + "px";
-          s3pipe.style.top = tipY3Static - pe3s - 30 - 44 + "px";
-          s3pipe.style.opacity = clamp(1 - (p3 - 0.6) / 0.05, 0, 1).toString();
-        }
+        // PHASE A: Gradient overlay — fires as soon as sec3 enters bottom of viewport
+        const sec3Rect = sec3.getBoundingClientRect();
+        const sec3Entering = sec3Rect.top < vh; // true the moment top edge crosses bottom of screen
 
-        // PHASE B: Blue tint
-        if (p3 > 0.2) {
-          const tintR = clamp((p3 - 0.2) / 0.2, 0, 1);
-          s3blueTint.style.opacity = easeOut(tintR) * 0.85;
-        } else {
-          s3blueTint.style.opacity = 0;
+        if (sec3Entering && !gradientShown) {
+          gradientShown = true;
+          s3gradientOverlay.classList.add("ha-show");
+          s3blurOrb1.classList.add("ha-show");
+          s3blurOrb2.classList.add("ha-show");
+          s3blurOrb3.classList.add("ha-show");
+          s3pCanvasEl.classList.add("ha-show");
         }
-
-        // PHASE C: Water rises
-        const waterStart = 0.27,
-          waterEnd = 0.6;
-        if (p3 > waterStart) {
-          const wRatio = clamp(
-            (p3 - waterStart) / (waterEnd - waterStart),
-            0,
-            1,
-          );
-          const wHeight = easeOut(wRatio) * vhH * 1.05;
-          s3water.style.height = wHeight + "px";
-          const waterSurfaceY = vhH - wHeight;
-          [s3ripple1, s3ripple2, s3ripple3].forEach((r) => {
-            r.style.top = waterSurfaceY + "px";
-          });
-          if (wRatio > 0.9 && !successShown) {
-            successShown = true;
-            s3success.classList.add("ha-show");
-          }
-          if (wRatio < 0.85 && successShown) {
-            successShown = false;
-            s3success.classList.remove("ha-show");
-            s3success.classList.remove("ha-rising");
-            waterFoundRising = false;
-          }
-        } else {
-          s3water.style.height = "0px";
-          if (successShown) {
-            successShown = false;
-            s3success.classList.remove("ha-show");
-            s3success.classList.remove("ha-rising");
-            waterFoundRising = false;
-          }
-        }
-
-        // PHASE D: Water Found rises up
-        if (p3 > 0.68 && !waterFoundRising) {
-          waterFoundRising = true;
-          s3success.classList.add("ha-rising");
-        }
-        if (p3 < 0.64 && waterFoundRising) {
-          waterFoundRising = false;
-          s3success.classList.remove("ha-rising");
-        }
-
-        // PHASE E: Gradient overlay
-        if (p3 > 0.72) {
-          const gRatio = clamp((p3 - 0.72) / 0.08, 0, 1);
-          if (!gradientShown && gRatio > 0.3) {
-            gradientShown = true;
-            s3gradientOverlay.classList.add("ha-show");
-            s3blurOrb1.classList.add("ha-show");
-            s3blurOrb2.classList.add("ha-show");
-            s3blurOrb3.classList.add("ha-show");
-            s3pCanvasEl.classList.add("ha-show");
-          }
-        }
-        if (p3 < 0.68 && gradientShown) {
+        if (!sec3Entering && gradientShown) {
           gradientShown = false;
           s3gradientOverlay.classList.remove("ha-show");
           s3blurOrb1.classList.remove("ha-show");
@@ -492,23 +472,27 @@ export default function Hero() {
           s3pCanvasEl.classList.remove("ha-show");
         }
 
-        // PHASE F: Stats
+        // PHASE B: Stats stagger in — p3entry = 0 when sec3 top hits bottom of screen, 1 when fully covering viewport
+        const p3entry = clamp((vh - sec3Rect.top) / vh, 0, 1);
+
         const statsItems = [
-          { el: s3owner, trigger: 0.8 },
-          { el: s3stat1, trigger: 0.85 },
-          { el: s3stat2, trigger: 0.89 },
-          { el: s3stat3, trigger: 0.92 },
-          { el: s3stat4, trigger: 0.95 },
+          { el: s3owner, trigger: 0.15 },
+          { el: s3stat1, trigger: 0.35 },
+          { el: s3stat2, trigger: 0.5 },
+          { el: s3stat3, trigger: 0.65 },
+          { el: s3stat4, trigger: 0.8 },
         ];
         statsItems.forEach(({ el, trigger }) => {
-          if (p3 > trigger) el.classList.add("ha-show");
+          if (p3entry > trigger) el.classList.add("ha-show");
           else el.classList.remove("ha-show");
         });
-        if (p3 > 0.975 && !ctaShown) {
+
+        // CTA visible as soon as sec3 fully covers the viewport (p3entry = 1)
+        if (p3entry >= 1 && !ctaShown) {
           ctaShown = true;
           s3cta.classList.add("ha-show");
         }
-        if (p3 < 0.97) {
+        if (p3entry < 0.95 && ctaShown) {
           ctaShown = false;
           s3cta.classList.remove("ha-show");
         }
@@ -1324,150 +1308,18 @@ export default function Hero() {
               className={styles.debrisCanvas}
               aria-hidden="true"
             />
-          </div>
-        </section>
 
-        {/* SECTION 3 — DEEP ROCK + WATER + STATS */}
-        <section
-          id="sec3"
-          className={styles.sec3}
-          aria-label="Water Discovery and Results"
-        >
-          <div className={styles.sec3Stage} id="sec3stage">
-            <div className={styles.s3Bg} aria-hidden="true" />
+            {/* Blue tint overlay — appears as pipe reaches S9 */}
             <div
               className={styles.s3BlueTint}
-              id="s3blueTint"
+              id="s2blueTint"
               aria-hidden="true"
             />
 
-            <svg
-              className={styles.s3RockSvg}
-              viewBox="0 0 1440 900"
-              preserveAspectRatio="xMidYMid slice"
-              style={{ opacity: "0.07" }}
-              aria-hidden="true"
-            >
-              <line
-                x1="0"
-                y1="200"
-                x2="1440"
-                y2="200"
-                stroke="#fff"
-                strokeWidth=".5"
-                strokeDasharray="20,40"
-              />
-              <line
-                x1="0"
-                y1="450"
-                x2="1440"
-                y2="450"
-                stroke="#fff"
-                strokeWidth=".5"
-                strokeDasharray="15,35"
-              />
-              <line
-                x1="0"
-                y1="700"
-                x2="1440"
-                y2="700"
-                stroke="rgba(0,180,216,1)"
-                strokeWidth="1.2"
-                strokeDasharray="10,20"
-              />
-              <line
-                x1="200"
-                y1="0"
-                x2="360"
-                y2="900"
-                stroke="#fff"
-                strokeWidth=".5"
-                opacity=".5"
-              />
-              <line
-                x1="800"
-                y1="0"
-                x2="910"
-                y2="900"
-                stroke="#fff"
-                strokeWidth=".5"
-                opacity=".3"
-              />
-              <line
-                x1="1200"
-                y1="0"
-                x2="1095"
-                y2="900"
-                stroke="#fff"
-                strokeWidth=".5"
-                opacity=".4"
-              />
-              <path
-                d="M400,300 Q500,320 600,290 Q700,270 800,300"
-                stroke="rgba(201,168,76,.25)"
-                strokeWidth="1"
-                fill="none"
-              />
-              <path
-                d="M100,600 Q200,580 350,610 Q500,640 650,600"
-                stroke="rgba(0,180,216,.3)"
-                strokeWidth="1.2"
-                fill="none"
-              />
-            </svg>
-
-            <div className={styles.s3DepthMeter} id="s3depthMeter">
-              <div className={styles.s2DepthTick} style={{ top: "10%" }} />
-              <div className={styles.s2DepthNum} style={{ top: "10%" }}>
-                90m
-              </div>
-              <div className={styles.s2DepthTick} style={{ top: "25%" }} />
-              <div className={styles.s2DepthNum} style={{ top: "25%" }}>
-                95m
-              </div>
-              <div className={styles.s2DepthTick} style={{ top: "40%" }} />
-              <div className={styles.s2DepthNum} style={{ top: "40%" }}>
-                100m
-              </div>
-              <div className={styles.s2DepthTick} style={{ top: "55%" }} />
-              <div className={styles.s2DepthNum} style={{ top: "55%" }}>
-                105m
-              </div>
-              <div className={styles.s2DepthTick} style={{ top: "70%" }} />
-              <div className={styles.s2DepthNum} style={{ top: "70%" }}>
-                110m
-              </div>
-              <div className={styles.s2DepthTick} style={{ top: "85%" }} />
-              <div className={styles.s2DepthNum} style={{ top: "85%" }}>
-                115m ✦
-              </div>
-            </div>
-
-            <div
-              className={styles.s3PipeContainer}
-              id="s3pipe"
-              style={{ top: "-500px", opacity: 0 }}
-              aria-hidden="true"
-            >
-              <div className={styles.s2MachineHead} />
-              <div
-                className={styles.s3PipeBody}
-                id="s3pipeBody"
-                style={{ height: "200px" }}
-              />
-              <div className={styles.s3PipeTip} />
-            </div>
-
-            <canvas
-              id="s3-debris-canvas"
-              className={styles.debrisCanvas}
-              aria-hidden="true"
-            />
-
-            {/* Water level rising */}
+            {/* Water level rising inside sec2 */}
             <div
               className={styles.s3WaterLevel}
-              id="s3water"
+              id="s2water"
               style={{ height: 0 }}
               aria-hidden="true"
             >
@@ -1496,31 +1348,44 @@ export default function Hero() {
                     "linear-gradient(180deg,rgba(0,180,216,0.25) 0%,transparent 100%)",
                 }}
               />
-              <div className={styles.s3Bubbles} id="s3bubbles" />
+              <div className={styles.s3Bubbles} id="s2bubbles" />
             </div>
 
+            {/* Ripples at water surface */}
             <div
               className={styles.s3Ripple}
-              id="s3ripple1"
+              id="s2ripple1"
               aria-hidden="true"
             />
             <div
               className={styles.s3Ripple}
-              id="s3ripple2"
+              id="s2ripple2"
               style={{ animationDelay: "0.9s" }}
               aria-hidden="true"
             />
             <div
               className={styles.s3Ripple}
-              id="s3ripple3"
+              id="s2ripple3"
               style={{ animationDelay: "1.8s" }}
               aria-hidden="true"
             />
 
-            <div className={styles.s3Success} id="s3success">
+            {/* Water Found text */}
+            <div className={styles.s3Success} id="s2success">
               <h2>Water Found.</h2>
               <p>Aquifer Reached · 87 Metres Below</p>
             </div>
+          </div>
+        </section>
+
+        {/* SECTION 3 — GRADIENT OVERLAY + STATS */}
+        <section
+          id="sec3"
+          className={styles.sec3}
+          aria-label="Water Discovery and Results"
+        >
+          <div className={styles.sec3Stage} id="sec3stage">
+            <div className={styles.s3Bg} aria-hidden="true" />
 
             <div
               className={styles.s3GradientOverlay}
@@ -1549,7 +1414,6 @@ export default function Hero() {
               aria-hidden="true"
             />
 
-            {/* Stats layer — theme-3 Vision Glass Bento */}
             <div
               className={`${styles.s3StatsLayer} ${styles.theme3}`}
               id="s3statsLayer"

@@ -1,6 +1,8 @@
 "use client";
 import { useState, useRef, useCallback } from "react";
-
+export const metadata = {
+  robots: { index: false, follow: false },
+};
 // ── Editable field — defined OUTSIDE CMSEditor so it never remounts on parent re-render
 function E({
   section,

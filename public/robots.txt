@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+Host: https://mmswaterdiviners.in
+Sitemap: https://mmswaterdiviners.in/sitemap.xml

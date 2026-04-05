@@ -574,7 +574,7 @@
    SECTION 2 — DRILLING DOWN
 ══════════════════════════════════════════ */
 .sec2 {
-  height: 450vh;
+  height: 700vh;
   position: relative;
 }
 .sec2Stage {
@@ -589,18 +589,15 @@
   background: linear-gradient(
     180deg,
     #150c05 0%,
-    #120a04 8%,
-    #100804 16%,
-    #0e0703 24%,
-    #0d0603 32%,
-    #0c0603 40%,
-    #1a1410 48%,
-    #16100d 56%,
-    #13100c 64%,
-    #100e0a 72%,
-    #0e0c08 80%,
-    #0c0a06 90%,
-    #0a0804 100%
+    #1e1008 8%,
+    #2e1a06 20%,
+    #3d2008 30%,
+    #2e1a06 42%,
+    #241505 54%,
+    #1a1008 66%,
+    #120c0a 76%,
+    #0a0a12 88%,
+    #060a18 100%
   );
 }
 .s2LayersVisual {
@@ -776,6 +773,10 @@
   opacity: 1 !important;
   transform: none !important;
 }
+:global(#s2headline.ha-show) {
+  opacity: unset !important;
+  transform: unset !important;
+}
 
 .s2LayerLabelDot {
   width: 7px;
@@ -799,12 +800,12 @@
 .s2Headline {
   position: absolute;
   top: 7%;
-  left: 20%;
+  left: 12%;
   transform: translateX(-50%);
   text-align: center;
   z-index: 30;
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transition: none;
   width: min(1000px, 110vw);
 }
 /* ha-show handled by global rule above */
@@ -830,7 +831,7 @@
    SECTION 3 — DEEP ROCK + WATER + STATS
 ══════════════════════════════════════════ */
 .sec3 {
-  height: 500vh;
+  height: 300vh;
   position: relative;
 }
 .sec3Stage {
@@ -842,16 +843,7 @@
 .s3Bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    #0a0804 0%,
-    #090703 15%,
-    #0a0803 30%,
-    #0b0a08 50%,
-    #0a0a10 70%,
-    #081018 90%,
-    #06101e 100%
-  );
+  background: #020d1a;
 }
 .s3BlueTint {
   position: absolute;
@@ -1019,30 +1011,57 @@
 
 /* SUCCESS — Water Found. */
 .s3Success {
-  position: absolute;
+  position: fixed;
+  top: 50%;
   left: 50%;
-  bottom: 28%;
-  transform: translateX(-50%) translateY(50px);
+  transform: translate(-50%, -50%) translateY(60px);
   text-align: center;
-  z-index: 30;
+  z-index: 60;
+  pointer-events: none;
   opacity: 0;
+  white-space: nowrap;
   transition:
     opacity 1.4s ease,
     transform 1.4s ease;
-  pointer-events: none;
-  white-space: nowrap;
 }
-:global(#s3success.ha-show) {
+:global(#s3success.ha-show),
+:global(#s2success.ha-show) {
   opacity: 1 !important;
-  transform: translateX(-50%) translateY(0) !important;
+  transform: translate(-50%, -50%) translateY(0) !important;
 }
-:global(#s3success.ha-rising) {
+:global(#s3success.ha-rising),
+:global(#s2success.ha-rising) {
   opacity: 0 !important;
-  transform: translateX(-50%) translateY(-120px) !important;
+  transform: translate(-50%, -50%) translateY(-120px) !important;
   transition:
     opacity 1.2s ease,
     transform 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
 }
+
+/* Pulse ring on pipe tip when water is touched */
+@keyframes pipeTipPulse {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(0, 180, 216, 0.8),
+      0 0 0 0 rgba(0, 180, 216, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 0 18px rgba(0, 180, 216, 0),
+      0 0 0 36px rgba(0, 180, 216, 0);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(0, 180, 216, 0),
+      0 0 0 0 rgba(0, 180, 216, 0);
+  }
+}
+
+:global(.ha-pulse) {
+  animation: pipeTipPulse 0.9s ease-out infinite !important;
+  background: var(--aqua) !important;
+}
+
 .s3Success h2 {
   font-family: "Playfair Display", serif;
   font-size: clamp(3.5rem, 11vw, 9rem);
@@ -1073,7 +1092,7 @@
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   opacity: 0;
   z-index: 12;
-  transition: opacity 1.8s ease;
+  transition: opacity 0.3s ease;
   pointer-events: none;
 }
 :global(#s3gradientOverlay.ha-show) {
@@ -1087,7 +1106,7 @@
   filter: blur(80px);
   opacity: 0;
   z-index: 13;
-  transition: opacity 2s ease;
+  transition: opacity 0.3s ease;
   pointer-events: none;
 }
 :global(.ha-show.s3BlurOrb),
@@ -1126,7 +1145,7 @@
   z-index: 14;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 1.5s ease;
+  transition: opacity 0.3s ease;
 }
 :global(#s3-particle-canvas.ha-show) {
   opacity: 1 !important;

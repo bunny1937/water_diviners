@@ -6,6 +6,14 @@ import { getSiteContent } from "@/lib/getSiteContent";
 import styles from "./page.module.css";
 import ReviewsSection from "@/components/sections/ReviewsSections";
 
+export const metadata = {
+  title: "M.M.S Water Diviners | Groundwater Survey Expert Kankavli",
+  description:
+    "M.M.S Water Diviners in Kankavli — expert groundwater scanning, borewell marking & depth estimation. 10+ years, 95% success rate. Call 9370427023.",
+  alternates: { canonical: "https://mmswaterdiviners.in" },
+  openGraph: { url: "https://mmswaterdiviners.in" },
+};
+
 export default async function Home() {
   const [journey, process, services] = await Promise.all([
     getSiteContent("journey"),

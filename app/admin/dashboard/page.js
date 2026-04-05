@@ -5,6 +5,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Link from "next/link";
 
+export const metadata = {
+  robots: { index: false, follow: false },
+};
+
 export default async function Dashboard() {
   const cookieStore = await cookies();
   const token = cookieStore.get("adminToken")?.value;
