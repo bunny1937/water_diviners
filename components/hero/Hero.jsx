@@ -57,12 +57,14 @@ export default function Hero() {
     const onMouseMove = (e) => {
       mx = e.clientX;
       my = e.clientY;
+      if (!cur || !curRing) return; // ← ADD THIS LINE
       cur.style.left = mx + "px";
       cur.style.top = my + "px";
     };
     document.addEventListener("mousemove", onMouseMove);
 
     function updateRing() {
+      if (!cur || !curRing) return; // ← ADD THIS LINE
       rx += (mx - rx) * 0.14;
       ry += (my - ry) * 0.14;
       curRing.style.left = rx + "px";
@@ -78,27 +80,42 @@ export default function Hero() {
     const storyEl = $("#story");
     const dots = $$(".dot");
 
+    const criticalEls = [loaderFill, loaderPct, loaderEl, storyEl];
+    if (criticalEls.some((el) => !el)) return;
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
     let pct = 0;
+    // FIND your loaderTimer setInterval, REPLACE with:
     const loaderTimer = setInterval(() => {
       pct += Math.random() * 3 + 1.2;
       if (pct >= 100) {
         pct = 100;
         clearInterval(loaderTimer);
+        loaderFill.style.transform = `scaleX(1)`;
+        loaderPct.textContent = "100%";
+
+        // ✅ Exit immediately after a tiny settle delay (150ms feels natural)
+        setTimeout(() => {
+          if (!loaderEl || !storyEl) return;
+          loaderEl.classList.add("ha-exit");
+          storyEl.classList.add("ha-visible");
+          const dotsEl = $("#dots");
+          if (dotsEl) dotsEl.classList.add("ha-visible");
+          setTimeout(() => {
+            const s1 = $("#s1title");
+            const s2h = $("#s2headline");
+            if (!s1 || !s2h) return;
+            s1.classList.add("ha-show");
+            animateCracks();
+            s2h.classList.add("ha-show");
+          }, 400);
+        }, 150); // ← 150ms after hitting 100% → exits cleanly
+
+        return;
       }
       loaderFill.style.transform = `scaleX(${pct / 100})`;
       loaderPct.textContent = Math.round(pct) + "%";
     }, 60);
-
-    const loaderTimeout = setTimeout(() => {
-      loaderEl.classList.add("ha-exit");
-      storyEl.classList.add("ha-visible");
-      $("#dots").classList.add("ha-visible");
-      setTimeout(() => {
-        $("#s1title").classList.add("ha-show");
-        animateCracks();
-        $("#s2headline").classList.add("ha-show");
-      }, 400);
-    }, 5000);
 
     /* ── CRACK ANIMATION ── */
     function animateCracks() {
@@ -523,7 +540,6 @@ export default function Hero() {
     /* CLEANUP */
     return () => {
       clearInterval(loaderTimer);
-      clearTimeout(loaderTimeout);
       cancelAnimationFrame(cursorRAF);
       document.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("scroll", onScroll);
@@ -615,22 +631,22 @@ export default function Hero() {
                 height="26"
                 fill="rgba(0,50,120,.35)"
               />
-              <line
+              {/* <line
                 x1="0"
                 y1="40"
                 x2="340"
                 y2="40"
                 stroke="rgba(255,255,255,.12)"
                 strokeDasharray="8,14"
-              />
-              <line
+              /> */}
+              {/* <line
                 x1="0"
                 y1="68"
                 x2="340"
                 y2="68"
                 stroke="rgba(201,168,76,.2)"
                 strokeDasharray="6,12"
-              />
+              /> */}
               <line
                 x1="0"
                 y1="92"
@@ -855,9 +871,6 @@ export default function Hero() {
               Scanning Earth Layers · Locating Aquifer
             </div>
             <div className={styles.loaderProbeWrap}>
-              <div className={styles.loaderDepthBar}>
-                <div className={styles.loaderDepthFill} id="loaderDepthFill" />
-              </div>
               <div className={styles.loaderHzBar}>
                 <div className={styles.loaderHzFill} id="loaderFill" />
               </div>
@@ -1172,13 +1185,7 @@ export default function Hero() {
                 height="180"
                 fill="rgba(25,18,8,.10)"
               />
-              <rect
-                x="0"
-                y="360"
-                width="1440"
-                height="4"
-                fill="rgba(0,0,0,.22)"
-              />
+
               <line
                 x1="0"
                 y1="540"
@@ -1238,14 +1245,18 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className={styles.s2LayerLabel} id="ll1" style={{ top: "4%" }}>
+            <div
+              className={styles.s2LayerLabel}
+              id="ll1"
+              style={{ top: "14%" }}
+            >
               <div className={styles.s2LayerLabelDot} />
               <span>S5 — Dense Clay · 20m</span>
             </div>
             <div
               className={styles.s2LayerLabel}
               id="ll2"
-              style={{ top: "18%" }}
+              style={{ top: "28%" }}
             >
               <div className={styles.s2LayerLabelDot} />
               <span>S6 — Gravel Pack · 35m</span>
@@ -1253,7 +1264,7 @@ export default function Hero() {
             <div
               className={styles.s2LayerLabel}
               id="ll3"
-              style={{ top: "33%" }}
+              style={{ top: "43%" }}
             >
               <div className={styles.s2LayerLabelDot} />
               <span>S7 — Compressed Soil · 50m</span>
@@ -1261,7 +1272,7 @@ export default function Hero() {
             <div
               className={styles.s2LayerLabel}
               id="ll4"
-              style={{ top: "48%" }}
+              style={{ top: "58%" }}
             >
               <div className={styles.s2LayerLabelDot} />
               <span>S8 — Fractured Rock · 65m</span>
@@ -1269,7 +1280,7 @@ export default function Hero() {
             <div
               className={styles.s2LayerLabel}
               id="ll5"
-              style={{ top: "64%" }}
+              style={{ top: "74%" }}
             >
               <div className={styles.s2LayerLabelDot} />
               <span>S9 — Deep Rock · 80m</span>
@@ -1277,7 +1288,7 @@ export default function Hero() {
             <div
               className={styles.s2LayerLabel}
               id="ll6"
-              style={{ top: "80%" }}
+              style={{ top: "90%" }}
             >
               <div className={styles.s2LayerLabelDot} />
               <span>S10 — Pre-Aquifer · 95m</span>

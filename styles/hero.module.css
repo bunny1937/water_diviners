@@ -304,10 +304,9 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 0%;
+  width: 100%;
   background: linear-gradient(90deg, var(--water), var(--aqua));
   box-shadow: 0 0 8px var(--aqua);
-  transition: width 0.04s linear;
   transform: scaleX(0);
   transform-origin: left center;
 }
@@ -800,7 +799,7 @@
 .s2Headline {
   position: absolute;
   top: 7%;
-  left: 12%;
+  left: 8%;
   transform: translateX(-50%);
   text-align: center;
   z-index: 30;
@@ -831,7 +830,7 @@
    SECTION 3 — DEEP ROCK + WATER + STATS
 ══════════════════════════════════════════ */
 .sec3 {
-  height: 300vh;
+  height: 200vh;
   position: relative;
 }
 .sec3Stage {
@@ -1415,6 +1414,19 @@
 /* ══════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════ */
+
+@media (min-width: 1700px) {
+  .s2Headline {
+    left: 22%;
+  }
+}
+
+@media (max-width: 1700px) and (min-width: 1340px) {
+  .s2Headline {
+    left: 18%;
+  }
+}
+
 @media (max-width: 1024px) {
   .theme3 .s3StatsContainer {
     display: flex;
@@ -1610,7 +1622,7 @@
      Fix: allow wrapping, bump font size, raise vertical position
   ══════════════════════════════════════════════════════════════ */
   .sec3 {
-    height: 350vh;
+    height: 180vh;
   }
 
   .s3Success {
@@ -1733,7 +1745,7 @@
   }
 
   .sec3 {
-    height: 360vh; /* ~25% less */
+    height: 150vh; /* ~25% less */
   }
 
   /* Water Found — even bigger on small screens */
