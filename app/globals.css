@@ -156,7 +156,9 @@ img {
     transform: translateX(10px);
   }
 }
-
+#gallery .track::-webkit-scrollbar {
+  display: none;
+}
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 10px;

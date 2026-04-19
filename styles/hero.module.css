@@ -1210,7 +1210,7 @@
 .s3ProfileCard {
   background: rgba(255, 255, 255, 0.03);
   border-radius: 40px;
-  padding: 40px 50px;
+  padding: 20px 30px;
   display: flex;
   gap: 30px;
   align-items: center;
@@ -1279,7 +1279,7 @@
   align-items: center;
   gap: 8px;
   font-size: 1rem;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   font-weight: 500;
 }
 .s3ExpertiseBadges {
@@ -1304,7 +1304,7 @@
 /* STAT ITEMS */
 .s3StatItem {
   background: rgba(255, 255, 255, 0.03);
-  padding: 45px 35px;
+  padding: 20px 25px;
   border-radius: 36px;
   text-align: left;
   box-shadow:
@@ -1336,13 +1336,12 @@
 .statIcon {
   background: rgba(2, 137, 255, 0.433);
   color: #003656;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
 }
@@ -1352,7 +1351,7 @@
   stroke-width: 1.5;
 }
 .s3StatNum {
-  font-size: 4rem;
+  font-size: 3.5rem;
   font-family: "DM Sans", sans-serif;
   font-weight: 600;
   color: #0077be;
@@ -1368,7 +1367,7 @@
 /* CTA GROUP */
 .s3CtaGroup {
   display: flex;
-  padding: 24px;
+  padding: 15px;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 40px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1377,7 +1376,7 @@
 .ctaPrimary {
   background: #fff;
   color: #000;
-  padding: 20px 50px;
+  padding: 10px 40px;
   border-radius: 40px;
   text-decoration: none;
   font-weight: 600;
@@ -1447,7 +1446,6 @@
   }
 
   .s3ProfileCard {
-    flex-direction: column;
     align-items: center;
     gap: 16px;
     padding: 18px 16px;
@@ -1463,17 +1461,17 @@
     height: 80px;
   }
   .s3OwnerName {
-    font-size: 2rem;
+    font-size: 3rem;
     letter-spacing: -0.5px;
     margin-bottom: 4px;
   }
   .s3OwnerRole {
-    font-size: 1rem;
+    font-size: 1.2rem;
     letter-spacing: 1px;
     margin-bottom: 8px;
   }
   .s3OwnerLocation {
-    font-size: 0.9rem;
+    font-size: 1rem;
     margin-bottom: 10px;
   }
   .s3ExpertiseBadges {
@@ -1482,7 +1480,7 @@
   }
   .badge {
     padding: 10px 15px;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     border-radius: 20px;
   }
 

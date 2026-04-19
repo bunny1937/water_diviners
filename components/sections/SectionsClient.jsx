@@ -1,5 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
+import GallerySection from "./GallerySection";
 
 const JourneySectionClient = dynamic(() => import("./JourneySectionClient"), {
   ssr: false,
@@ -14,9 +15,15 @@ const ServicesSectionClient = dynamic(() => import("./ServicesSectionClient"), {
   loading: () => <div style={{ minHeight: "80vh" }} />,
 });
 
-export default function SectionsClient({ journey, process, services }) {
+export default function SectionsClient({
+  journey,
+  process,
+  services,
+  gallery,
+}) {
   return (
     <>
+      <GallerySection items={gallery} />
       <div id="about">
         <JourneySectionClient c={journey} />
       </div>

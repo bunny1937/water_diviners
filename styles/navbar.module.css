@@ -73,7 +73,7 @@
 .navLinks {
   display: flex;
   list-style: none;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   margin: 0;
   padding: 0;
 }
@@ -254,7 +254,11 @@
   width: 24px;
   height: 24px;
 }
-
+@media (max-width: 1024px) {
+  .navLinks {
+    gap: var(--spacing-sm);
+  }
+}
 /* Responsive */
 @media (max-width: 968px) {
   .navLinks,

@@ -16,8 +16,7 @@ export default function AdminLoginPage() {
     setGLoading(true);
     setError("");
     try {
-      // Let NextAuth handle callbackUrl automatically
-      await signIn("google");
+      await signIn("google", { callbackUrl: "/admin/dashboard" });
     } catch (err) {
       setError("Google login failed");
     } finally {

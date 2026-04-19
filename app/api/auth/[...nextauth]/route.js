@@ -53,12 +53,10 @@ export const authOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      // After admin login, go to dashboard
-      if (url.startsWith("/admin") || url.includes("admindashboard")) {
-        return `${baseUrl}/admin/dashboard`;
-      }
-      // For public users, go back to homepage
-      return baseUrl;
+      // After Google OAuth, NextAuth passes the callbackUrl as `url`
+      if (url.startsWith("/admin")) return `${baseUrl}${url}`;
+      if (url.startsWith(baseUrl)) return url;
+      return `${baseUrl}/admin/dashboard`;
     },
   },
   session: { strategy: "jwt" },

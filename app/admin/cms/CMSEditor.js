@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 export const metadata = {
   robots: { index: false, follow: false },
 };
@@ -141,6 +141,314 @@ export default function CMSEditor({ initialContent }) {
       setDraft("");
     }
   }
+  function GalleryManager() {
+    const [items, setItems] = useState([]);
+    const [uploading, setUploading] = useState(false);
+    const [uploadType, setUploadType] = useState("image"); // "image" | "video"
+    const [editId, setEditId] = useState(null);
+    const [editCaption, setEditCaption] = useState("");
+    const fileRef = useRef(null);
+
+    async function load() {
+      const res = await fetch("/api/admin/gallery");
+      setItems(await res.json());
+    }
+
+    useEffect(() => {
+      load();
+    }, []);
+
+    async function handleUpload(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploading(true);
+      try {
+        // Step 1: Upload to Cloudinary via our API
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("type", uploadType);
+
+        const uploadRes = await fetch("/api/admin/gallery/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          const err = await uploadRes.json();
+          throw new Error(err.error || "Upload failed");
+        }
+
+        const { url, type } = await uploadRes.json();
+
+        // Step 2: Save URL to MongoDB gallery collection
+        await fetch("/api/admin/gallery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, type, caption: "" }),
+        });
+
+        await load();
+      } catch (err) {
+        alert("Upload failed: " + err.message);
+      } finally {
+        setUploading(false);
+        if (fileRef.current) fileRef.current.value = "";
+      }
+    }
+
+    async function handleDelete(id) {
+      if (!confirm("Delete this item?")) return;
+      await fetch("/api/admin/gallery", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      await load();
+    }
+
+    async function saveCaption(id) {
+      await fetch("/api/admin/gallery", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, caption: editCaption }),
+      });
+      setEditId(null);
+      await load();
+    }
+
+    return (
+      <div>
+        {/* Type toggle + upload button */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            marginBottom: 20,
+          }}
+        >
+          <div style={gm.typeToggle}>
+            {["image", "video"].map((t) => (
+              <button
+                key={t}
+                onClick={() => setUploadType(t)}
+                style={{
+                  ...gm.typeBtn,
+                  ...(uploadType === t ? gm.typeBtnActive : {}),
+                }}
+              >
+                {t === "image" ? "📷 Image" : "🎬 Video"}
+              </button>
+            ))}
+          </div>
+
+          <label style={gm.uploadLabel}>
+            <span style={{ ...gm.uploadBtn, opacity: uploading ? 0.6 : 1 }}>
+              {uploading
+                ? "Uploading…"
+                : `＋ Upload ${uploadType === "video" ? "Video" : "Image"}`}
+            </span>
+            <input
+              ref={fileRef}
+              type="file"
+              accept={uploadType === "video" ? "video/*" : "image/*"}
+              hidden
+              disabled={uploading}
+              onChange={handleUpload}
+            />
+          </label>
+        </div>
+
+        {items.length === 0 && (
+          <p style={{ color: "#9ca3af" }}>
+            No items yet. Upload an image or video above.
+          </p>
+        )}
+
+        <div style={gm.grid}>
+          {items.map((item) => (
+            <div key={item._id} style={gm.card}>
+              {/* Thumbnail */}
+              {item.type === "video" ? (
+                <div style={gm.videoThumb}>
+                  <video src={item.url} style={gm.videoEl} muted />
+                  <span style={gm.videoTag}>🎬 Video</span>
+                </div>
+              ) : (
+                <img src={item.url} alt={item.caption} style={gm.thumb} />
+              )}
+
+              {/* Caption row */}
+              <div style={gm.cardBody}>
+                {editId === item._id ? (
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <input
+                      value={editCaption}
+                      onChange={(e) => setEditCaption(e.target.value)}
+                      style={gm.captionInput}
+                      placeholder="Caption…"
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => saveCaption(item._id)}
+                      style={gm.saveBtn}
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditId(null)}
+                      style={gm.cancelBtn}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 6 }}
+                  >
+                    <span style={gm.captionText}>
+                      {item.caption || (
+                        <em style={{ color: "#9ca3af" }}>No caption</em>
+                      )}
+                    </span>
+                    <button
+                      onClick={() => {
+                        setEditId(item._id);
+                        setEditCaption(item.caption);
+                      }}
+                      style={gm.editBtn}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      style={gm.deleteBtn}
+                    >
+                      🗑
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const gm = {
+    typeToggle: {
+      display: "flex",
+      background: "#f1f5f9",
+      borderRadius: 8,
+      padding: 3,
+      gap: 4,
+    },
+    typeBtn: {
+      padding: "6px 16px",
+      border: "none",
+      borderRadius: 6,
+      fontWeight: 600,
+      fontSize: 13,
+      cursor: "pointer",
+      background: "transparent",
+      color: "#374151",
+    },
+    typeBtnActive: { background: "#0077be", color: "#fff" },
+    uploadLabel: { display: "inline-block", cursor: "pointer" },
+    uploadBtn: {
+      padding: "9px 22px",
+      background: "#0077be",
+      color: "#fff",
+      borderRadius: 8,
+      fontWeight: 700,
+      fontSize: 14,
+      display: "inline-block",
+    },
+    grid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+      gap: 16,
+      marginTop: 8,
+    },
+    card: {
+      background: "#fff",
+      borderRadius: 12,
+      boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
+      overflow: "hidden",
+      border: "1px solid #e5e7eb",
+    },
+    thumb: { width: "100%", height: 140, objectFit: "cover", display: "block" },
+    videoThumb: {
+      position: "relative",
+      width: "100%",
+      height: 140,
+      background: "#0c1a2e",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    videoEl: {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      opacity: 0.5,
+    },
+    videoTag: {
+      position: "absolute",
+      fontSize: 13,
+      fontWeight: 700,
+      color: "#fff",
+      background: "rgba(0,0,0,0.5)",
+      padding: "3px 10px",
+      borderRadius: 20,
+    },
+    cardBody: { padding: "10px 12px" },
+    captionText: { flex: 1, fontSize: 13, color: "#374151" },
+    captionInput: {
+      flex: 1,
+      padding: "5px 10px",
+      fontSize: 13,
+      border: "1.5px solid #0077be",
+      borderRadius: 6,
+      outline: "none",
+    },
+    saveBtn: {
+      padding: "5px 12px",
+      background: "#0077be",
+      color: "#fff",
+      border: "none",
+      borderRadius: 6,
+      fontWeight: 700,
+      fontSize: 12,
+      cursor: "pointer",
+    },
+    cancelBtn: {
+      padding: "5px 10px",
+      background: "#f1f5f9",
+      color: "#374151",
+      border: "none",
+      borderRadius: 6,
+      cursor: "pointer",
+    },
+    editBtn: {
+      padding: "3px 10px",
+      background: "#f0f9ff",
+      color: "#0077be",
+      border: "1px solid #bae6fd",
+      borderRadius: 6,
+      fontSize: 12,
+      cursor: "pointer",
+    },
+    deleteBtn: {
+      padding: "3px 8px",
+      background: "#fef2f2",
+      border: "1px solid #fecaca",
+      borderRadius: 6,
+      cursor: "pointer",
+      fontSize: 14,
+    },
+  };
 
   // Shared props passed to every E instance
   const eProps = {
@@ -457,7 +765,10 @@ export default function CMSEditor({ initialContent }) {
             </div>
           </div>
         </Block>
-
+        {/* ─── GALLERY BLOCK ─────────────────────────────── */}
+        <Block label="GALLERY" bg="#f0f9ff">
+          <GalleryManager />
+        </Block>
         {/* STATS */}
         <Block label="STATS" bg="#0077be">
           <div
