@@ -23,33 +23,17 @@ export async function proxy(request) {
     } catch {}
   }
 
-  // 🔥 GOOGLE SESSION — READ ALL COOKIES DIRECTLY
-  const allCookies = request.cookies.getAll();
-
-  const nextAuthCookies = allCookies.filter(
-    (c) => c.name.includes("next-auth") || c.name.includes("authjs"),
-  );
-
-  // Find session token & decode it
-  const sessionCookie = allCookies.find((c) =>
-    c.name.includes("session-token"),
-  );
-
-  if (sessionCookie?.value) {
-    try {
-      // Decode NextAuth JWT directly
-      const decoded = jwt.verify(
-        sessionCookie.value,
-        process.env.NEXTAUTH_SECRET,
-      );
-
-      if (decoded.email === process.env.ADMIN_GOOGLE_EMAIL) {
-        return NextResponse.next();
-      }
-    } catch (e) {
-      console.error("Google session JWT error:", e);
+  // Google session check via NextAuth
+  try {
+    const { getToken } = await import("next-auth/jwt");
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    if (token?.email === process.env.ADMIN_GOOGLE_EMAIL) {
+      return NextResponse.next();
     }
-  }
+  } catch {}
 
   // Allow login page
   if (request.nextUrl.pathname === "/admin/login") {
