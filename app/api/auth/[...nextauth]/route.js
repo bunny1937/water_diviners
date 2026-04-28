@@ -41,14 +41,14 @@ export const authOptions = {
     async jwt({ token, account, profile }) {
       if (account?.provider === "google") {
         token.googleId = account.providerAccountId;
-        token.isAdmin = token.email === process.env.ADMIN_GOOGLE_EMAIL;
       }
+      token.isAdmin = token.email === process.env.ADMIN_GOOGLE_EMAIL;
       return token;
     },
 
     async session({ session, token }) {
       session.user.googleId = token.googleId;
-      session.isAdmin = token.isAdmin || false;
+      session.isAdmin = token.email === process.env.ADMIN_GOOGLE_EMAIL; // ✅ Re-derive directly, never rely on ?? false
       return session;
     },
 
@@ -56,7 +56,7 @@ export const authOptions = {
       // After Google OAuth, NextAuth passes the callbackUrl as `url`
       if (url.startsWith("/admin")) return `${baseUrl}${url}`;
       if (url.startsWith(baseUrl)) return url;
-      return `${baseUrl}/admin/dashboard`;
+      return baseUrl;
     },
   },
   session: { strategy: "jwt" },
@@ -65,18 +65,4 @@ export const authOptions = {
 
 const handler = NextAuth(authOptions);
 
-async function wrappedHandler(req, res) {
-  const response = await handler(req, res);
-  // Replace no-store with private to allow bfcache
-  if (response instanceof Response) {
-    const newHeaders = new Headers(response.headers);
-    newHeaders.set("Cache-Control", "private, max-age=0, must-revalidate");
-    return new Response(response.body, {
-      status: response.status,
-      headers: newHeaders,
-    });
-  }
-  return response;
-}
-
-export { wrappedHandler as GET, wrappedHandler as POST };
+export { handler as GET, handler as POST };

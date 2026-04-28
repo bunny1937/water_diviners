@@ -13,11 +13,9 @@ export default async function Navbar() {
   ]);
 
   // IP check (same dual-layer as middleware)
-  const forwarded = headersList.get("x-forwarded-for");
-  const ip = forwarded ? forwarded.split(",")[0].trim() : "unknown";
-  const isAllowedIP = ip === process.env.ADMIN_ALLOWED_IP;
   const isAdminGoogle = session?.isAdmin === true;
-  const isAdmin = isAllowedIP || isAdminGoogle; // either is enough
+  // IP alone is not enough to show the Admin link — Google account must match
+  const isAdmin = isAdminGoogle;
 
   return (
     <NavbarClient

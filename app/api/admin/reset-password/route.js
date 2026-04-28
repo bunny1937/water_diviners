@@ -32,7 +32,6 @@ export async function POST(req) {
     record.used = true;
     await record.save();
 
-    console.log("✅ Password reset for admin:", record.adminId);
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("❌ Reset password error:", err);

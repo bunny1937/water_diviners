@@ -25,7 +25,7 @@ export async function GET() {
       .lean();
     return NextResponse.json(content);
   } catch (err) {
-    console.error("GET /api/admin/content error:", err);
+    console.error("error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
@@ -59,7 +59,6 @@ export async function PATCH(req) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("PATCH /api/admin/content error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

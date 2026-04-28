@@ -8,13 +8,11 @@ export async function POST(req) {
   try {
     await connectDB();
     const { email } = await req.json();
-    console.log("📩 Email received:", email); // ← ADD THIS
 
     if (!email)
       return NextResponse.json({ error: "Email required" }, { status: 400 });
 
     const admin = await Admin.findOne({ email });
-    console.log("👤 Admin found:", admin ? "YES" : "NO - NOT IN DB"); // ← ADD THIS
 
     if (!admin) return NextResponse.json({ success: true });
 
@@ -26,13 +24,6 @@ export async function POST(req) {
     await PasswordResetToken.create({ adminId: admin._id, token, expiresAt });
 
     const resetUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/admin/reset-password?token=${token}`;
-    console.log(
-      "🔑 BREVO_API_KEY:",
-      process.env.BREVO_API_KEY?.slice(0, 10) + "...",
-    );
-    console.log("📧 BREVO_SENDER_EMAIL:", process.env.BREVO_SENDER_EMAIL);
-    console.log("📧 Sending to:", email);
-    console.log("🔗 Reset URL:", resetUrl);
 
     // ✅ Raw fetch — no SDK, no import issues
     const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
@@ -86,7 +77,6 @@ export async function POST(req) {
       );
     }
 
-    console.log("✅ Reset email sent to:", email);
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("❌ Forgot password error:", err);
