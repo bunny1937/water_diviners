@@ -1296,7 +1296,7 @@ export default function Hero() {
 
             <div className={styles.s2Headline} id="s2headline">
               <h2>We Read the Earth</h2>
-              <p>Geophysical Electromagnetic Survey</p>
+              <p>GEOPHYSICAL ELECTRICAL RESISTIVITY METHOD SURVEY</p>
             </div>
 
             <div

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "@/styles/navbar.module.css";
 
 export default function NavbarClient({
@@ -47,22 +48,18 @@ export default function NavbarClient({
         {/* Logo */}
         <Link href="/" className={styles.logo}>
           <div className={styles.logoIcon}>
-            <svg viewBox="0 0 40 40" fill="none">
-              <circle
-                cx="20"
-                cy="20"
-                r="18"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-              <path
-                d="M 20 10 L 20 20 L 15 25 M 20 20 L 25 25"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path d="M 12 28 Q 20 25 28 28" fill="currentColor" />
-            </svg>
+            <Image
+              src="/logo.jpeg"
+              alt="Logo"
+              width={100}
+              height={60}
+              style={{
+                width: "auto",
+                height: "60px",
+                objectFit: "cover",
+                borderRadius: "50%",
+              }}
+            />
           </div>
           <div className={styles.logoText}>
             <span className={styles.brandName}>{brandName}</span>

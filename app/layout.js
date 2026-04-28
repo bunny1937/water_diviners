@@ -10,7 +10,9 @@ export const metadata = {
     default: "M.M.S Water Diviners | Groundwater Survey Expert Kankavli",
     template: "%s | M.M.S Water Diviners",
   },
-
+  icons: {
+    icon: "/logo.jpeg",
+  },
   description:
     "M.M.S Water Diviners — Dhananjay Manohar Sawant, Kankavli's top geophysical groundwater survey expert. Borewell point marking, depth estimation, 95% success rate, 10+ years experience. Call 9370427023.",
 
